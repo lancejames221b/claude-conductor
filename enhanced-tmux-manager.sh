@@ -40,7 +40,7 @@ create_task_session() {
     local session_name="task-${session_id}"
     
     log_event "INFO" "Creating task session: $session_name" "$SESSION_LOG"
-    log_event "INFO" "Command: agent -p '$agent_command'" "$TASK_LOG"
+    log_event "INFO" "Command: claude --permission-mode bypassPermissions -p '$agent_command'" "$TASK_LOG"
     log_event "INFO" "Type: $session_type" "$TASK_LOG"
     
     if [ -n "$parent_session" ]; then
@@ -53,7 +53,7 @@ create_task_session() {
 {
     "session_name": "$session_name",
     "task_name": "$task_name",
-    "command": "agent -p '$agent_command'",
+    "command": "claude --permission-mode bypassPermissions -p '$agent_command'",
     "type": "$session_type",
     "parent_session": "$parent_session",
     "created_at": "$(date -Iseconds)",
@@ -65,15 +65,15 @@ EOF
     # Launch tmux session with logging wrapper
     local log_file="$LOG_DIR/${session_name}.log"
     echo -e "${BLUE}🚀 Starting: $session_name${NC}"
-    echo -e "${YELLOW}Command: agent -p \"$agent_command\"${NC}"
+    echo -e "${YELLOW}Command: claude --permission-mode bypassPermissions -p \"$agent_command\"${NC}"
     echo -e "${PURPLE}Log: $log_file${NC}"
     
     # Create tmux session that logs everything
     tmux new-session -d -s "$session_name" bash -c "
         echo 'Session started: $(date)' >> '$log_file';
-        echo 'Command: agent -p \"$agent_command\"' >> '$log_file';
+        echo 'Command: /Volumes/SeXternal/homebrew/bin/claude --permission-mode bypassPermissions -p \"$agent_command\"' >> '$log_file';
         echo '--- OUTPUT START ---' >> '$log_file';
-        agent -p '$agent_command' 2>&1 | tee -a '$log_file';
+/Volumes/SeXternal/homebrew/bin/claude --permission-mode bypassPermissions -p '$agent_command' 2>&1 | tee -a '$log_file';
         echo '--- OUTPUT END ---' >> '$log_file';
         echo 'Session completed: $(date)' >> '$log_file';
         echo 'Exit code: \$?' >> '$log_file'
@@ -335,13 +335,24 @@ case "$1" in
                 fi
             done
         ;;
+    "memory")
+        # Memory system integration
+        MEMORY_SCRIPT="./memory.sh"
+        if [ -f "$MEMORY_SCRIPT" ]; then
+            shift
+            "$MEMORY_SCRIPT" "$@"
+        else
+            echo -e "${RED}Error: Memory system not found at $MEMORY_SCRIPT${NC}"
+            exit 1
+        fi
+        ;;
     "help"|"")
         echo -e "${BLUE}Enhanced Orchestrator with Logging and Session Tracking${NC}"
         echo ""
         echo "Usage: $0 <command> [arguments]"
         echo ""
         echo -e "${GREEN}Session Management:${NC}"
-        echo "  create <name> <cmd> [type] [parent]  - Create new task session"
+        echo "  create <n> <cmd> [type] [parent]  - Create new task session"
         echo "  continue <parent> <prompt>           - Create continuation task"
         echo "  resume <session> <prompt>            - Create resume task"
         echo "  status                               - Show all sessions with details"
@@ -353,14 +364,24 @@ case "$1" in
         echo "  search <term> [type]                 - Search sessions (type: all,task_name,command,status)"
         echo "  export [file]                        - Export all session data to JSON"
         echo ""
+        echo -e "${GREEN}Memory System:${NC}"
+        echo "  memory store <content> [tags]        - Store a memory"
+        echo "  memory recall <id>                   - Recall a memory"
+        echo "  memory search <term>                 - Search memories"
+        echo "  memory list                          - List all memories"
+        echo "  memory help                          - Memory system help"
+        echo ""
         echo -e "${YELLOW}Examples:${NC}"
         echo "  $0 create lint 'fix Python linting issues'"
         echo "  $0 continue task-lint-123 'now run tests on the fixed code'"
         echo "  $0 resume session-456 'continue where we left off'"
         echo "  $0 search 'linting' command"
         echo "  $0 export /tmp/my_sessions.json"
+        echo "  $0 memory store 'Database password is in .env file' 'security,database'"
+        echo "  $0 memory search 'api'"
         echo ""
         echo -e "${BLUE}Logs stored in:${NC} $LOG_DIR"
+        echo -e "${BLUE}Memories stored in:${NC} /Users/lj/Desktop/claude-orchestrator/memories"
         ;;
     *)
         echo -e "${RED}Unknown command: $1${NC}"

@@ -36,7 +36,21 @@ else
     echo -e "${GREEN}✅ Homebrew found${NC}"
 fi
 
-# Check for Claude Code CLI
+# Check for iTerm2
+if [ ! -d "/Applications/iTerm.app" ]; then
+    echo -e "${YELLOW}⚠️  iTerm2 not found${NC}"
+    echo "Installing iTerm2..."
+    brew install --cask iterm2
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}✅ iTerm2 installed${NC}"
+        echo -e "${YELLOW}📋 Note: You'll need to configure the iTerm MCP server in Claude Desktop${NC}"
+    else
+        echo -e "${RED}❌ Failed to install iTerm2${NC}"
+        exit 1
+    fi
+else
+    echo -e "${GREEN}✅ iTerm2 found${NC}"
+fi
 if ! command_exists claude; then
     echo -e "${YELLOW}⚠️  Claude Code CLI not found${NC}"
     echo "Installing Claude Code CLI..."
@@ -85,7 +99,7 @@ echo ""
 echo -e "${BLUE}🔧 Setting up Claude Conductor...${NC}"
 
 # Make scripts executable
-chmod +x enhanced-tmux-manager.sh
+chmod +x tmux-manager.sh
 chmod +x tmux-utils.sh
 chmod +x activate.sh
 
@@ -122,11 +136,11 @@ fi
 # Test basic functionality
 echo -e "${BLUE}🧪 Testing basic functionality...${NC}"
 
-# Test enhanced manager help
-if ./enhanced-tmux-manager.sh help >/dev/null 2>&1; then
-    echo -e "${GREEN}✅ Enhanced tmux manager working${NC}"
+# Test tmux manager help
+if ./tmux-manager.sh help >/dev/null 2>&1; then
+    echo -e "${GREEN}✅ Tmux manager working${NC}"
 else
-    echo -e "${RED}❌ Enhanced tmux manager has issues${NC}"
+    echo -e "${RED}❌ Tmux manager has issues${NC}"
 fi
 
 # Test basic tmux utils
@@ -141,18 +155,27 @@ echo -e "${GREEN}🎉 Installation complete!${NC}"
 echo ""
 echo -e "${BLUE}🚀 Quick Start:${NC}"
 echo "1. Test the system:"
-echo "   ./enhanced-tmux-manager.sh create test \"What is today's date?\""
+echo "   ./tmux-manager.sh create test \"What is today's date?\""
 echo ""
 echo "2. Check status:"
-echo "   ./enhanced-tmux-manager.sh status"
+echo "   ./tmux-manager.sh status"
 echo ""
 echo "3. View help:"
-echo "   ./enhanced-tmux-manager.sh help"
+echo "   ./tmux-manager.sh help"
 echo ""
 echo -e "${BLUE}📚 Documentation:${NC}"
 echo "- README.md - Main documentation"
-echo "- ENHANCED-README.md - Detailed features"
 echo "- examples/workflows.md - Usage examples"
 echo "- orchestrator-system-prompt.md - Claude Desktop integration"
 echo ""
-echo -e "${BLUE}🎼 Ready to orchestrate! ${NC}"
+echo -e "${BLUE}🔧 MCP Server Configuration:${NC}"
+echo "To enable full functionality, configure the iTerm MCP server in Claude Desktop:"
+echo ""
+echo "1. Open Claude Desktop Settings"
+echo "2. Go to MCP Servers section"
+echo "3. Add the iTerm MCP server configuration"
+echo "4. Restart Claude Desktop"
+echo ""
+echo "Without the iTerm MCP server, the orchestrator will not be able to"
+echo "control terminal sessions automatically."
+echo ""

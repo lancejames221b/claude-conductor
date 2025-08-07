@@ -1,6 +1,6 @@
 # claude-conductor
 
-🎼 **Enhanced Claude Desktop Orchestrator** - A comprehensive system for orchestrating multiple Claude Code CLI agents with full session tracking, logging, and continuation capabilities.
+🎼 **Claude Desktop Orchestrator** - A comprehensive system for orchestrating multiple Claude Code CLI agents with full session tracking, logging, and continuation capabilities.
 
 ## Overview
 
@@ -8,7 +8,7 @@ Claude Conductor transforms your Claude Desktop into a powerful multi-agent orch
 
 ## Features
 
-### 🎯 **Core Capabilities**
+### 🎯 Core Capabilities
 - **Multi-Agent Orchestration**: Run multiple Claude Code CLI agents simultaneously
 - **Session Management**: Full tmux session management with unique session IDs
 - **Comprehensive Logging**: Every agent execution is fully logged and tracked
@@ -16,7 +16,7 @@ Claude Conductor transforms your Claude Desktop into a powerful multi-agent orch
 - **Resume Functionality**: Resume interrupted or previous work sessions
 - **Search & Analysis**: Search through session history and export data
 
-### 🔧 **Technical Features**
+### 🔧 Technical Features
 - **Parallel Execution**: True parallel agent execution using tmux sessions
 - **Session Isolation**: Each agent runs in its own isolated session
 - **Context Preservation**: Full context passed between continuation sessions
@@ -28,6 +28,8 @@ Claude Conductor transforms your Claude Desktop into a powerful multi-agent orch
 ### Prerequisites
 
 - macOS with Homebrew
+- **iTerm2** (https://iterm2.com/) - Required terminal emulator
+- **iTerm MCP Server** - For terminal control integration
 - Claude Code CLI installed (`npm install -g @anthropic-ai/claude-code`)
 - tmux (`brew install tmux`)
 - jq (`brew install jq`)
@@ -61,7 +63,15 @@ Claude Conductor transforms your Claude Desktop into a powerful multi-agent orch
    cd claude-conductor
    ```
 
-2. **Install prerequisites**:
+2. **Install and configure iTerm2**:
+   ```bash
+   # Download and install iTerm2
+   brew install --cask iterm2
+   ```
+   
+   **Important**: You must configure the iTerm MCP server in your Claude Desktop MCP settings for terminal control functionality.
+
+3. **Install prerequisites**:
    ```bash
    # Install Claude Code CLI
    npm install -g @anthropic-ai/claude-code
@@ -70,7 +80,7 @@ Claude Conductor transforms your Claude Desktop into a powerful multi-agent orch
    brew install tmux jq
    ```
 
-3. **Set up shell aliases**:
+4. **Set up shell aliases**:
    Add to your `~/.zshrc` or `~/.bashrc`:
    ```bash
    alias agent="claude --permission-mode bypassPermissions"
@@ -80,12 +90,12 @@ Claude Conductor transforms your Claude Desktop into a powerful multi-agent orch
    
    Then reload: `source ~/.zshrc`
 
-4. **Make scripts executable**:
+5. **Make scripts executable**:
    ```bash
    chmod +x *.sh
    ```
 
-5. **Test the system**:
+6. **Test the system**:
    ```bash
    ./enhanced-tmux-manager.sh create test "What is today's date?"
    ./enhanced-tmux-manager.sh status
@@ -94,7 +104,19 @@ Claude Conductor transforms your Claude Desktop into a powerful multi-agent orch
 ### Claude Desktop Integration
 
 1. **Load the system prompt**: Use the content from `orchestrator-system-prompt.md` in your Claude Desktop
-2. **Start orchestrating**: Use `orchestrate:` or `🎼` to begin orchestrated workflows
+2. **Configure iTerm MCP server**: Add the iTerm MCP server to your Claude Desktop MCP settings for terminal control
+3. **Start orchestrating**: Use `orchestrate:` or `🎼` to begin orchestrated workflows
+
+#### MCP Server Configuration
+
+The orchestrator requires the iTerm MCP server to control terminal sessions. Configure it in Claude Desktop:
+
+1. Open Claude Desktop Settings
+2. Navigate to MCP Servers section  
+3. Add the iTerm MCP server configuration
+4. Restart Claude Desktop
+
+Without the iTerm MCP server, the orchestrator cannot automatically manage tmux sessions and agent execution.
 
 ## Usage
 
@@ -102,28 +124,28 @@ Claude Conductor transforms your Claude Desktop into a powerful multi-agent orch
 
 ```bash
 # Create a new tracked agent session
-./enhanced-tmux-manager.sh create "task-name" "your agent command"
+./tmux-manager.sh create "task-name" "your agent command"
 
 # Check status of all sessions
-./enhanced-tmux-manager.sh status
+./tmux-manager.sh status
 
 # Get full results from a session
-./enhanced-tmux-manager.sh results "session-name"
+./tmux-manager.sh results "session-name"
 
 # Continue from a previous session
-./enhanced-tmux-manager.sh continue "parent-session" "continuation prompt"
+./tmux-manager.sh continue "parent-session" "continuation prompt"
 
 # Resume previous work
-./enhanced-tmux-manager.sh resume "session-id" "resume prompt"
+./tmux-manager.sh resume "session-id" "resume prompt"
 
 # Search session history
-./enhanced-tmux-manager.sh search "search-term" [search-type]
+./tmux-manager.sh search "search-term" [search-type]
 
 # Export session data
-./enhanced-tmux-manager.sh export [output-file]
+./tmux-manager.sh export [output-file]
 
 # Clean up completed sessions
-./enhanced-tmux-manager.sh cleanup
+./tmux-manager.sh cleanup
 ```
 
 ### Claude Desktop Usage
@@ -140,71 +162,75 @@ orchestrate: investigate performance issues then generate optimization report
 
 ```
 claude-conductor/
-├── enhanced-tmux-manager.sh          # Main orchestration manager
-├── orchestrator-system-prompt.md     # System prompt for Claude Desktop
-├── orchestrator-config.json          # Configuration template
-├── tmux-utils.sh                     # Basic tmux utilities
-├── activate.sh                       # Activation helper
-├── logs/                             # Session logs and metadata
-│   ├── task-*.log                   # Individual session logs
-│   ├── task-*.meta                  # Session metadata (JSON)
-│   ├── sessions.log                 # Master session log
-│   ├── tasks.log                    # Master task log
-│   └── orchestrator.log             # Master orchestrator log
-├── README.md                         # This file
-└── ENHANCED-README.md               # Detailed feature documentation
+├── tmux-manager.sh                  # Main orchestration manager
+├── memory.sh                        # Memory management system
+├── orchestrator-system-prompt.md    # System prompt for Claude Desktop
+├── orchestrator-config.json         # Configuration template
+├── tmux-utils.sh                    # Basic tmux utilities
+├── activate.sh                      # Activation helper
+├── install.sh                       # Installation script
+├── LICENSE                          # MIT License
+├── README.md                        # This file
+├── examples/                        # Example workflows
+│   └── ...
+└── logs/                           # Session logs and metadata
+    ├── task-*.log                  # Individual session logs
+    ├── task-*.meta                 # Session metadata (JSON)
+    ├── sessions.log                # Master session log
+    ├── tasks.log                   # Master task log
+    └── orchestrator.log            # Master orchestrator log
 ```
 
-## Logging Structure
+## Session Tracking & Logging
 
+### Logging Structure
 Every agent session generates:
 - **Session Log**: Complete output from the agent (`task-*.log`)
 - **Metadata**: JSON metadata with timing, status, commands (`task-*.meta`)
 - **Master Logs**: Centralized logging for sessions, tasks, and orchestrator events
 
-## Session Tracking
-
+### Session Format
 Sessions use the format: `task-[name]-[timestamp]`
 - **Unique IDs**: Every session gets a unique identifier
 - **Metadata Tracking**: Full JSON metadata for each session
 - **Relationship Tracking**: Parent-child relationships between related sessions
 - **Status Monitoring**: Real-time status updates (running, completed, failed)
 
-## Continuation Workflow
+## Workflows
+
+### Continuation Workflow
 
 ```bash
 # Create initial session
-./enhanced-tmux-manager.sh create "lint" "fix all Python linting issues"
+./tmux-manager.sh create "lint" "fix all Python linting issues"
 # Session: task-lint-1754581200
 
 # Continue with related work
-./enhanced-tmux-manager.sh continue "task-lint-1754581200" "now run tests on fixed code"
+./tmux-manager.sh continue "task-lint-1754581200" "now run tests on fixed code"
 # Session: task-task-lint-1754581200-continue-1754581250
 
 # Resume previous debugging session
-./enhanced-tmux-manager.sh resume "debug-session-123" "continue investigating database issue"
+./tmux-manager.sh resume "debug-session-123" "continue investigating database issue"
 ```
-
-## Examples
 
 ### Parallel Development Workflow
 ```bash
 # Run multiple tasks simultaneously
-./enhanced-tmux-manager.sh create "lint" "fix all linting issues"
-./enhanced-tmux-manager.sh create "test" "run all unit tests"  
-./enhanced-tmux-manager.sh create "security" "run security scan"
+./tmux-manager.sh create "lint" "fix all linting issues"
+./tmux-manager.sh create "test" "run all unit tests"  
+./tmux-manager.sh create "security" "run security scan"
 
 # Monitor all sessions
-./enhanced-tmux-manager.sh status
+./tmux-manager.sh status
 ```
 
 ### Sequential Analysis with Continuation
 ```bash
 # Initial analysis
-./enhanced-tmux-manager.sh create "analyze" "analyze codebase structure"
+./tmux-manager.sh create "analyze" "analyze codebase structure"
 
 # Continue based on results
-./enhanced-tmux-manager.sh continue "task-analyze-123" "generate documentation based on analysis"
+./tmux-manager.sh continue "task-analyze-123" "generate documentation based on analysis"
 ```
 
 ## Advanced Usage
@@ -212,19 +238,19 @@ Sessions use the format: `task-[name]-[timestamp]`
 ### Search and Resume Previous Work
 ```bash
 # Search for previous linting sessions
-./enhanced-tmux-manager.sh search "linting" command
+./tmux-manager.sh search "linting" command
 
 # Resume specific session
-./enhanced-tmux-manager.sh resume "task-lint-1754581200" "continue with additional fixes"
+./tmux-manager.sh resume "task-lint-1754581200" "continue with additional fixes"
 ```
 
 ### Export and Analysis
 ```bash
 # Export all session data
-./enhanced-tmux-manager.sh export session-analysis.json
+./tmux-manager.sh export session-analysis.json
 
 # Search by status
-./enhanced-tmux-manager.sh search "completed" status
+./tmux-manager.sh search "completed" status
 ```
 
 ## Configuration
@@ -242,6 +268,35 @@ alias agentc="claude --permission-mode bypassPermissions -c"
 - **Shell**: Designed for zsh/bash environments
 - **Claude Code**: Requires authenticated Claude Code CLI installation
 
+## Example Workflow with Logging
+
+**User**: `orchestrate: fix Python linting then run tests`
+
+**Orchestrator Response**:
+```
+🎼 **Task**: Fix Python linting then run tests
+📋 **Plan**: Sequential execution with full logging
+
+**Step 1**: Analyzing and fixing linting issues...
+[Executing: ~/Desktop/claude-orchestrator/tmux-manager.sh create "lint" "analyze Python files and fix all linting issues"]
+📊 Session: task-lint-1754581200
+📄 Log: /Users/lj/Desktop/claude-orchestrator/logs/task-lint-1754581200.log
+
+**Monitoring**: Session task-lint-1754581200 running...
+**Results**: ✅ Fixed 15 linting issues in 8 files
+[Session task-lint-1754581200 completed]
+
+**Step 2**: Running tests on fixed code...
+[Executing: ~/Desktop/claude-orchestrator/tmux-manager.sh continue "task-lint-1754581200" "run all Python unit tests on the files we just fixed"]
+📊 Session: task-task-lint-1754581200-continue-1754581250
+📄 Log: /Users/lj/Desktop/claude-orchestrator/logs/task-task-lint-1754581200-continue-1754581250.log
+
+**Final Status**: ✅ All tasks completed
+📄 **Session Summary**:
+- task-lint-1754581200: Completed (linting fixed)
+- task-task-lint-1754581200-continue-1754581250: Completed (tests passed)
+```
+
 ## Contributing
 
 1. Fork the repository
@@ -257,7 +312,6 @@ MIT License - see LICENSE file for details.
 ## Support
 
 - **Issues**: Report bugs via GitHub Issues
-- **Documentation**: See ENHANCED-README.md for detailed features
 - **Examples**: Check the examples/ directory for workflow samples
 
 ---
