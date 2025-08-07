@@ -1,0 +1,40 @@
+# Logs and session data
+logs/*.log
+logs/*.meta
+logs/sessions.log
+logs/tasks.log
+logs/orchestrator.log
+
+# Session exports
+*.json
+session_export_*.json
+
+# Temporary files
+*.tmp
+.DS_Store
+
+# Local configuration overrides
+local_config.json
+.env
+.env.local
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Backup files
+*.bak
+*.backup
+
+# Personal notes and testing
+notes.md
+test_*.sh
+debug_*.log
