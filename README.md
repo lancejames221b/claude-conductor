@@ -34,18 +34,58 @@ Claude Conductor transforms your Claude Desktop into a powerful multi-agent orch
 
 ### Installation
 
+#### Option 1: Automated Installation
+
 1. **Clone the repository**:
    ```bash
    git clone https://github.com/lancejames221b/claude-conductor.git
    cd claude-conductor
    ```
 
-2. **Make scripts executable**:
+2. **Run the installation script**:
+   ```bash
+   ./install.sh
+   ```
+
+   This script will:
+   - Check and install prerequisites (tmux, jq, Claude Code CLI)
+   - Set up the directory structure
+   - Make scripts executable
+   - Test basic functionality
+
+#### Option 2: Manual Installation
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/lancejames221b/claude-conductor.git
+   cd claude-conductor
+   ```
+
+2. **Install prerequisites**:
+   ```bash
+   # Install Claude Code CLI
+   npm install -g @anthropic-ai/claude-code
+   
+   # Install system dependencies
+   brew install tmux jq
+   ```
+
+3. **Set up shell aliases**:
+   Add to your `~/.zshrc` or `~/.bashrc`:
+   ```bash
+   alias agent="claude --permission-mode bypassPermissions"
+   alias agentr="claude --permission-mode bypassPermissions -r"
+   alias agentc="claude --permission-mode bypassPermissions -c"
+   ```
+   
+   Then reload: `source ~/.zshrc`
+
+4. **Make scripts executable**:
    ```bash
    chmod +x *.sh
    ```
 
-3. **Test the system**:
+5. **Test the system**:
    ```bash
    ./enhanced-tmux-manager.sh create test "What is today's date?"
    ./enhanced-tmux-manager.sh status
