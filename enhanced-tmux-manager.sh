@@ -335,6 +335,17 @@ case "$1" in
                 fi
             done
         ;;
+    "mcp")
+        # MCP integration commands
+        MCP_SCRIPT="./mcp-import.sh"
+        if [ -f "$MCP_SCRIPT" ]; then
+            shift
+            "$MCP_SCRIPT" "$@"
+        else
+            echo -e "${RED}Error: MCP integration script not found at $MCP_SCRIPT${NC}"
+            exit 1
+        fi
+        ;;
     "memory")
         # Memory system integration
         MEMORY_SCRIPT="./memory.sh"
@@ -363,6 +374,12 @@ case "$1" in
         echo -e "${GREEN}Search and Analysis:${NC}"
         echo "  search <term> [type]                 - Search sessions (type: all,task_name,command,status)"
         echo "  export [file]                        - Export all session data to JSON"
+        echo ""
+        echo -e "${GREEN}MCP Integration:${NC}"
+        echo "  mcp import                           - Import MCP servers from Claude Desktop"
+        echo "  mcp list                             - List available MCP servers"
+        echo "  mcp status                           - Show MCP integration status"
+        echo "  mcp test <server>                    - Test MCP server availability"
         echo ""
         echo -e "${GREEN}Memory System:${NC}"
         echo "  memory store <content> [tags]        - Store a memory"

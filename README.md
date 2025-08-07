@@ -10,7 +10,9 @@ Claude Conductor transforms your Claude Desktop into a powerful multi-agent orch
 
 ### 🎯 Core Capabilities
 - **Multi-Agent Orchestration**: Run multiple Claude Code CLI agents simultaneously
+- **MCP Server Integration**: Automatic access to configured MCP servers (filesystem, Slack, eWitness, Atlassian, etc.)
 - **Session Management**: Full tmux session management with unique session IDs
+- **Memory System**: Persistent memory storage with tagging and search capabilities
 - **Comprehensive Logging**: Every agent execution is fully logged and tracked
 - **Continuation Support**: Continue work from previous sessions with full context
 - **Resume Functionality**: Resume interrupted or previous work sessions
@@ -124,28 +126,28 @@ Without the iTerm MCP server, the orchestrator cannot automatically manage tmux 
 
 ```bash
 # Create a new tracked agent session
-./tmux-manager.sh create "task-name" "your agent command"
+./enhanced-tmux-manager.sh create "task-name" "your agent command"
 
-# Check status of all sessions
-./tmux-manager.sh status
+# Import and manage MCP servers
+./enhanced-tmux-manager.sh mcp import          # Import from Claude Desktop
+./enhanced-tmux-manager.sh mcp list            # List available MCP servers
+./enhanced-tmux-manager.sh mcp status          # Show MCP integration status
 
-# Get full results from a session
-./tmux-manager.sh results "session-name"
+# Memory system
+./enhanced-tmux-manager.sh memory store "content" "tags"
+./enhanced-tmux-manager.sh memory search "term"
+./enhanced-tmux-manager.sh memory list
 
-# Continue from a previous session
-./tmux-manager.sh continue "parent-session" "continuation prompt"
+# Session management
+./enhanced-tmux-manager.sh status              # Check status of all sessions
+./enhanced-tmux-manager.sh results "session"   # Get full results from a session
+./enhanced-tmux-manager.sh continue "parent" "prompt" # Continue from previous session
+./enhanced-tmux-manager.sh resume "session" "prompt"  # Resume previous work
 
-# Resume previous work
-./tmux-manager.sh resume "session-id" "resume prompt"
-
-# Search session history
-./tmux-manager.sh search "search-term" [search-type]
-
-# Export session data
-./tmux-manager.sh export [output-file]
-
-# Clean up completed sessions
-./tmux-manager.sh cleanup
+# Analysis and export
+./enhanced-tmux-manager.sh search "term" [type] # Search session history
+./enhanced-tmux-manager.sh export [file]       # Export session data
+./enhanced-tmux-manager.sh cleanup             # Clean up completed sessions
 ```
 
 ### Claude Desktop Usage
